@@ -1,14 +1,6 @@
 colorSelector = document.querySelector("input");
 // colorSelector.addEventListener("input", false);
 // colorSelector.addEventListener("input", watchColorPicker, false);
-colorSelector.addEventListener("input", (event) => {
-  //found via mdn's site on
-  /* "<input type="color"></input>" */
-  hexCode.textContent = event.target.value;
-  hexCodeString = String(event.target.value);
-  console.log(hexCodeString);
-  getRGBValues(hexCodeString);
-});
 
 //values to set the rgb textContent and hsl textContent
 let hexCode = document.querySelector("#hex");
@@ -17,12 +9,33 @@ let hslCode = document.querySelector("#hsl");
 
 let hexCodeString;
 let rgbValue = "";
-// function watchColorPicker(event) {
-//   hexCode.textContent = event.target.value;
-//   hexCodeString = String(event.target.value);
-//   console.log(hexCodeString);
-// }
 
+displayHex(watchColorPicker());
+
+// showRBGVal();
+// getHSLValues(rgbValue);
+// showHSLVal(h, s, l);
+
+//get selected color from user
+//found via mdn's site on
+/* "<input type="color"></input>" */
+
+function watchColorPicker() {
+  colorSelector.addEventListener("input", (event) => {
+    hexCodeString = String(event.target.value);
+    console.log(hexCodeString);
+    displayHex(hexCodeString);
+    let getrgbValues = getRGBValues(hexCodeString);
+    showRGBVal(getrgbValues);
+    showHSLVal(getHSLValues(getrgbValues));
+  });
+}
+
+function displayHex(hexCodeString) {
+  hexCode.textContent = hexCodeString;
+}
+
+// //convert hex code to rbg
 function getRGBValues(hexCodeString) {
   //split the hexCode string into red part, green part and blue part
   let splitHexR = hexCodeString.substring(1, 3);
@@ -32,28 +45,29 @@ function getRGBValues(hexCodeString) {
   let redVal = Number.parseInt(splitHexR, 16);
   let greenVal = Number.parseInt(splitHexG, 16);
   let blueVal = Number.parseInt(splitHexB, 16);
-  console.log(redVal, greenVal, blueVal);
-  //put the converted numbers into rbg p's textContent.
-  rgbCode.textContent = `${redVal}${greenVal}${blueVal}`.toString();
-  rgbCode.value = rgbCode.textContent;
-  console.log(rgbCode.value);
-  // put the calue
-  rgbValue = rgbCode.value;
-  getHSLValues(rgbValue);
+  // returns as ann object
+  return { redVal, greenVal, blueVal };
 }
 
-//convert hex code to rbg
+// //seperate show that this function only changes display of rgb
+function showRGBVal({ redVal, greenVal, blueVal }) {
+  //read rgb object properties
+  let rgbGenerated = { redVal, greenVal, blueVal };
+  //put the converted numbers into rbg p's textContent.
+  rgbCode.textContent =
+    `${rgbGenerated.redVal}${rgbGenerated.greenVal}${rgbGenerated.blueVal}`.toString();
+  rgbCode.value = rgbCode.textContent;
+}
 
-//convert RBG values to HSL add additional code
-//this is from brief
+// //convert RBG values to HSL add additional code
+// //this is from brief
 function getHSLValues(rgbValue) {
   //get the rbg values to parse into the hsl values
-  // let hslValue = rgbValue;
 
-  //convert the numbers from rbg to hsl
-  let r = Number.parseInt(rgbValue.substring(0, 3)),
-    g = Number.parseInt(rgbValue.substring(3, 5)),
-    b = Number.parseInt(rgbValue.substring(5));
+  //convert the numbers from rbg object to hsl
+  let r = Number.parseInt(rgbValue.redVal),
+    g = Number.parseInt(rgbValue.greenVal),
+    b = Number.parseInt(rgbValue.blueVal);
   //divide each value of r, g, and b with 255
   r /= 255;
   g /= 255;
@@ -90,7 +104,14 @@ function getHSLValues(rgbValue) {
   l *= 100;
 
   console.log("hsl(%f,%f%,%f%)", h, s, l); // just for testing
-  hslCode.textContent = `${h}% ${s}% ${l}%`.toString();
-  console.log(hslCode);
+  //return the converted numbers into an object
+  return { h, s, l };
 }
-// rgbCode.textContent = `${redVal}${greenVal}${blueVal}`.toString();
+
+//this changes the display of hsl textcontent.
+function showHSLVal(hslValueObject) {
+  //read the value of the hsl object and put it into correct p tag context
+  hslCode.textContent =
+    `${hslValueObject.h}% ${hslValueObject.s}% ${hslValueObject.l}%`.toString();
+  console.log(hslCode.textContent);
+}
